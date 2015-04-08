@@ -3,30 +3,33 @@ goserver:
   ports:
     - "8153:8153"
   links:
-    - nexus:nexus
+#    - nexus:nexus
     - gitbucket:git
   volumes:
     - ./ssh/:/var/go/.ssh
+    - ./go-server-config:/etc/go
   privileged: true
-goagent01:
-  image: gocd/gocd-agent:14.4.0
+goagent:
+  build: ./go-agent/
+#  image: gocd/gocd-agent:14.4.0
   links:
     - goserver:go-server
-    - nexus:nexus
+#    - nexus:nexus
     - gitbucket:git
-  volumes:
-    - ./ssh:/var/go/.ssh
+#  volumes:
+#    - ./ssh-agent:/var/go/.ssh
   privileged: true
-nexus:
-  image: sonatype/nexus
-  ports:
-    - "8081:8081"
+#nexus:
+#  image: sonatype/nexus
+#  ports:
+#    - "8081:8081"
 gitbucket:
-  image: zerodivide1/docker-gitbucket
+  image: f99aq8ove/gitbucket
   ports:
     - "8080:8080"
     - "29418:29418"
-  links:
-    - nexus:nexus
+#  links:
+#    - nexus:nexus
   volumes:
-    - /opt/gitbucket:/data
+     - ./gitbucket-data:/gitbucket
+  privileged: true
