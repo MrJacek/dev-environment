@@ -13,3 +13,4 @@ hs_err_pid*
 gitbucket-data/*
 go-server-config/*
 *known_hosts
+.idea/*
