@@ -4,7 +4,7 @@ goserver:
     - "8153:8153"
   links:
 #    - nexus:nexus
-    - gitbucket:git
+    - gitlab:git
   volumes:
     - ./ssh/:/var/go/.ssh
     - ./go-server-config:/etc/go
@@ -15,21 +15,32 @@ goagent:
   links:
     - goserver:go-server
 #    - nexus:nexus
-    - gitbucket:git
+    - gitlab:git
 #  volumes:
 #    - ./ssh-agent:/var/go/.ssh
   privileged: true
-#nexus:
-#  image: sonatype/nexus
-#  ports:
-#    - "8081:8081"
-gitbucket:
-  image: f99aq8ove/gitbucket
+nexus:
+  image: sonatype/nexus
   ports:
-    - "8080:8080"
-    - "29418:29418"
-#  links:
-#    - nexus:nexus
+    - "8081:8081"
   volumes:
-     - ./gitbucket-data:/gitbucket
+    - ./nexus-data:/sonatype-work
+postgresql:
+  image: sameersbn/postgresql:9.4
+  environment:
+     - DB_USER=gitlab
+     - DB_PASS=secretpassword
+     - DB_NAME=gitlabhq_production
+  volumes:
+     - ./postgresql/data:/var/lib/postgresql
+gitlab:
+  image: sameersbn/gitlab:7.9.2
+  links:
+     - redis:redisio
+     - postgresql:postgresql
+  ports:
+     - "10080:80"
+     - "10022:22"
+redis:
+  image: sameersbn/redis:latest
   privileged: true
